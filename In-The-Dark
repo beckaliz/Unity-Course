@@ -1,0 +1,206 @@
+using UnityEngine;
+using UnityEngine.UI;
+using System.Collections;
+
+public class TextController : MonoBehaviour {
+
+
+	public Text text;
+	
+	private enum States {intro, death, room_0, room_1, search, corner_0, bed, trash_0, crybaby, trash_1, door_0, 
+						door_1, door_2, hallway_0, hallway_1, door_left, door_left_monster, storage_0, storage_1,};
+	private States myState;
+	
+	int prybar;
+	int door_attempt;
+		
+	// Use this for initialization
+	void Start () {
+		myState = States.intro;
+		prybar = 0;
+		door_attempt = 0;
+	}
+	
+	// Update is called once per frame
+	void Update () {
+		print (myState);
+	
+		if (myState == States.intro) { state_intro(); }
+		else if (myState == States.room_0) { state_room_0(); }
+		else if (myState == States.room_1) { state_room_1(); }
+		else if (myState == States.corner_0) { state_corner_0(); }
+		else if (myState == States.bed) { state_bed(); }
+		else if (myState == States.trash_0) { state_trash_0(); }
+		else if (myState == States.trash_1) { state_trash_1(); }
+		else if (myState == States.crybaby) { state_crybaby(); }
+		else if (myState == States.door_0) { state_door_0(); }
+		else if (myState == States.door_1) { state_door_1(); }
+		else if (myState == States.door_2) { state_door_2(); }
+		else if (myState == States.hallway_0) { state_hallway_0(); }
+		
+		}
+			
+	void state_intro () {
+		
+		text.text = "You awake in darkness, lying on a creaky old bed. The room you are in smells " +
+					"of wet stone and less pleasant things. You have no recollection of how you have " +
+					"gotten here, only vague memories of going out with your friends the night before. " +
+					"After pulling over by the side of the road to watch the stars, it all goes blank. "+
+					"\n\nHit Spacebar to begin your escape.";
+		if (Input.GetKeyDown (KeyCode.Space)) {
+			myState = States.room_0;
+		}
+	}
+	
+	void state_room_0 () { //You just got here
+			text.text = "Only the barest sliver of light can be seen from one corner of the room. "+
+						"Nearby you can somewhat make out a pile of junk, though it's hard to "+
+						"see what's there. There are no other visible indicators of where you are." +
+						"\n\nPress C to examine the light in the " +
+						"corner, T to dig through the trash, and R to search the room.";
+		if (Input.GetKeyDown (KeyCode.C)) {
+			myState = States.corner_0;
+		} else if (Input.GetKeyDown (KeyCode.T)) {
+			myState = States.trash_0;
+		} else if (Input.GetKeyDown (KeyCode.S)) {
+			myState = States.search;
+		}					
+			
+	}
+	
+	void state_corner_0 () { //Corner not searched
+		text.text = "Shoved into the corner of the room is a small flashlight. It is tucked " +
+					"so tightly against the wall that its light is smothered, which was why " +
+					"the room is so dark. That, and the apparent lack of electricity." +
+					"\n\nHit T to take the flashlight.";
+		if (Input.GetKeyDown (KeyCode.T)) {
+			myState = States.room_1;
+		}
+	}
+	
+	void state_search () { //Looking around in darkness
+		text.text = "It is entirely too dark in this place. You feel more and more claustrophobic "+
+		"as you grope around the room, getting who-knows-what sort of filth smeared all over your "+
+		"hands and clothing.\n\nHit Spacebar to continue.";
+		if (Input.GetKeyDown (KeyCode.Space)) {
+			myState = States.room_0;
+		}
+	}
+	
+	void state_room_1 () { //Now you have a flashlight
+		text.text = "Now that you have a flashlight, even if it is small and in poor shape, you " +
+					"can see around the room better. It is constructed of gray stone blocks, which " +
+					"are slimy in places with mildew and moisture. The bed you were lying in has "+
+					"sheets full of holes. There is a pile of mouse turds in one corner, and bits "+
+					"of broken straw lying about. You can see a door now, but it is locked from the "+
+					"outside. The small pile of trash seems to be comprised of broken furniture and "+
+					"old tools.\n\nHit T to search the trash, B to search the bed, "+
+					"and D to head for the door.";
+		if (Input.GetKeyDown (KeyCode.T)) {
+			myState = States.trash_1;
+		} else if (Input.GetKeyDown (KeyCode.B)) {
+			myState = States.bed;
+		} else if (Input.GetKeyDown (KeyCode.D)) {
+			if ( prybar == 0) {
+				myState = States.door_0;
+			} else if (prybar == 1) {
+				myState = States.door_1;
+			}
+			
+		}
+	}
+	
+	void state_bed () { //Searching the bed
+		text.text = "You rip the moldy sheets off the bed, search under them, and search under "+
+		"the mattress. All you get for your troubles is a face full of dust and a few minutes "+
+		"of violent sneezing.\n\nHit Spacebar to continue. ";
+		if (Input.GetKeyDown (KeyCode.Space)) {
+			myState = States.room_1;
+		}
+	}
+	
+	void state_trash_0 (){ //Searching the trash with the light off
+		text.text = "Going for the pile of trash, you shove your hands into it looking for "+
+					"something useful. Unfortunately, there are some very sharp pieces of "+
+					"junk hidden in the pile, and you have now sliced your hand. It stings a "+
+					"lot. Sorry.\n\nHit Spacebar to go back, or Return to cry about it for a while.";
+		if (Input.GetKeyDown (KeyCode.Space)) {
+			myState = States.room_0;
+		} else if (Input.GetKeyDown (KeyCode.Return)) {
+			myState = States.crybaby;
+		}
+	
+	}
+	
+	void state_crybaby () { //Crying about cutting your hand
+		text.text = "Crying about your hand gushing blood doesn't do you a whole lot of good, but "+
+		"after about fifteen minutes it feels better. You rip the hem off your shirt, wrap it up, "+
+		"and hit Spacebar to move on with your escape plan.";
+		if (Input.GetKeyDown (KeyCode.Space)) {
+			myState = States.room_0;
+		}
+	}
+	
+	void state_trash_1 () { //Searching trash with light
+		text.text = "The trash is mostly broken glass, smashed bits of furniture, and some old tools. "+
+					"Having the flashlight makes searching it easy, and to your delight you discover "+
+					"a prybar hidden amongst the detritus. \n\nHit T to take the prybar. Hit L to "+
+					"leave it alone.";
+		if (Input.GetKeyDown (KeyCode.T)) {
+			prybar = 1;
+			myState = States.room_1;
+		} else if (Input.GetKeyDown (KeyCode.L)) {
+			prybar = 0;
+			myState = States.room_1;
+		}
+	}
+	
+	void state_door_0 () { //Going for door with no prybar
+		text.text = "The door is just as old as everything else in the room. The wood is splintered "+
+					"in places, and it could easily be ripped apart... provided you had enough leverage. "+
+					"Since you don't, however, it is more than solid enough to prevent you from ripping "+
+					"it down with your bare hands."+
+					"\n\nHit Spacebar to continue.";
+		if (Input.GetKeyDown (KeyCode.Space)) {
+			myState = States.room_1;
+			door_attempt = 1;
+		}
+	}
+	
+	void state_door_1 () { //Now you've got a prybar
+		if (door_attempt == 0) {
+			text.text = "The door is as old as everything else in the room. The wood looks like it "+
+						"could come apart at any moment, although some probing with your bare hands "+
+						"shows that it'll take more leverage than that. Fortunately, you have a "+
+						"prybar at your disposal."+
+						"\n\nHit Spacebar to remove this obstacle.";
+			if (Input.GetKeyDown (KeyCode.Space)) {
+				myState = States.door_2;
+			}
+		} else if (door_attempt == 1) {
+			text.text = "Now that you have a prybar, busting down the door should not be terribly "+
+						"difficult."+
+						"\n\nHit Spacebar to tear that sucker down.";
+			if (Input.GetKeyDown (KeyCode.Space)) {
+				myState = States.door_2;
+			}
+		}
+	}
+	
+	void state_door_2 () { //Ripping the door down
+		text.text = "You jam the sharp end of the prybar in between the door and the frame, and "+
+					"throw all your weight into yanking it down. The old oak groans, but finally "+
+					"(and with your great satisfaction) "+
+					"it breaks apart. You are now able to get free of the room."+
+					"\n\nHit Spacebar to continue.";
+		if (Input.GetKeyDown (KeyCode.Space)) {
+			myState = States.hallway_0;
+		}
+	}
+	
+	void state_hallway_0 () { //First half of hallway
+	
+	}
+		
+}
+
